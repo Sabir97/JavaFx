@@ -1,20 +1,19 @@
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import sun.nio.cs.Surrogate;
+
+import java.util.EventListener;
 
 public class AnimationFx extends Application {
 
@@ -42,21 +41,40 @@ public class AnimationFx extends Application {
         Button btn1 = new Button("Click Me");
         Button btn2 = new Button("Lambda Expression");
 
-        Rectangle btn3 = new Rectangle(50,500,100,50);
+        Rectangle btn3 = new Rectangle(50,400,200,100);
         btn3.setFill(Color.GREY);
 
         KeyValue v1 = new KeyValue(btn3.fillProperty(), Color.GREY);
         KeyValue v2 = new  KeyValue(btn3.fillProperty(), Color.BLUE);
         KeyFrame f1 = new KeyFrame(Duration.millis(0), v1);
-        KeyFrame f2 = new KeyFrame(Duration.millis(1000), v2);
+        KeyFrame f2 = new KeyFrame(Duration.millis(2000), v2);
         Timeline hoverAnimation2 = new Timeline(f1, f2);
+        Timeline hoverExit = new Timeline(new KeyFrame(Duration.millis(0),v2),new KeyFrame(Duration.millis(2000),v1));
+        Timeline hover = new Timeline(f1, f2,new KeyFrame(Duration.millis(1000),v2),new KeyFrame(Duration.millis(2000),v1));
 
         btn3.setOnMouseEntered(event -> {
-            hoverAnimation2.play();
+            //hoverExit.stop();
+            hoverExit.pause();
+            Duration d1 = Duration.millis(2000).subtract(hoverExit.getCurrentTime());
+            if(hoverExit.getCurrentTime().equals(Duration.millis(0))){
+                hoverAnimation2.playFromStart();
+            }else {
+                hoverAnimation2.playFrom(d1);
+            }
         });
 
         btn3.setOnMouseExited(event -> {
-            new Timeline(new KeyFrame(Duration.millis(0),v2),new KeyFrame(Duration.millis(1000),v1)).play();
+            hoverAnimation2.pause();
+            //hover.pause();
+           // Duration d = Duration.millis(1000).subtract(hover.getCurrentTime());
+            Duration d2 = Duration.millis(2000).subtract(hoverAnimation2.getCurrentTime());
+            //hoverAnimation2.stop();
+            //Timeline hoverExit = new Timeline(new KeyFrame(Duration.millis(0),v2),new KeyFrame(Duration.millis(400),v1));
+            //hoverExit.playFrom(Duration.millis(2000).subtract(hoverAnimation2.getCycleDuration()));
+            //hover.playFrom(Duration.millis(2000).subtract(hoverAnimation2.getCurrentTime()));
+            //hover.jumpTo(Duration.millis(1000).add(d));
+            hoverExit.playFrom(d2);
+
         });
         btn2.setTranslateX(80);
         //btn1.setStyle("-fx-background-color:GREY");
